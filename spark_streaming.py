@@ -1,7 +1,8 @@
 from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
-from pyspark.streaming.kafka import KafkaUtils
+from pyspark.sql.functions import col
+from pyspark.sql.types import StringType
 
 # create a spark context
 sc = SparkSession.builder\
@@ -9,12 +10,19 @@ sc = SparkSession.builder\
         .master("local[2]")\
         .getOrCreate()
 
-ssc = StreamingContext(sc, 2)
+kafkaStream = sc \
+  .readStream \
+  .format("kafka") \
+  .option("kafka.bootstrap.servers", "localhost:9092") \
+  .option("subscribe", "twitter-stream") \
+  .load()
 
-kafkaStream = KafkaUtils.createStream(ssc, 'localhost:2181', 'twitter-stream', {'twitter':1})
+# decode value colume(utf-8)
+kafkaStream = kafkaStream.withColumn("value", col("value").cast(StringType()))
 
-kafkaStream.writeStream\
-           .format("console")
+ds = kafkaStream \
+  .writeStream \
+  .format("console") \
+  .start()
 
-ssc.start()
-ssc.awaitTermination()
+ds.awaitTermination()
