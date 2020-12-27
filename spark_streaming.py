@@ -1,22 +1,20 @@
 from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
-
-# default host and port for kafka server 
-HOST = "localhost"
-PORT  = 9092
+from pyspark.streaming.kafka import KafkaUtils
 
 # create a spark context
-spark = SparkSession.builder\
+sc = SparkSession.builder\
         .appName("twitter-trend-streaming")\
         .master("local[2]")\
         .getOrCreate()
 
-kafkaStream = spark \
-  .readStream \
-  .format("kafka") \
-  .option("kafka.bootstrap.servers", "localhost:9092") \
-  .option("subscribe", "twitter-stream") \
-  .load()
+ssc = StreamingContext(sc, 2)
 
-print(kafkaStream.collect())
+kafkaStream = KafkaUtils.createStream(ssc, 'localhost:2181', 'twitter-stream', {'twitter':1})
+
+kafkaStream.writeStream\
+           .format("console")
+
+ssc.start()
+ssc.awaitTermination()
