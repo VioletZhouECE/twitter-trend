@@ -3,6 +3,10 @@ from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from pyspark.sql.functions import col
 from pyspark.sql.types import StringType
+from settings.config_dev import settings
+
+KAFKA_HOST = settings["KAFKA_HOST"]
+KAFKA_PORT = settings["KAFKA_PORT"]
 
 # create a spark context
 sc = SparkSession.builder\
@@ -13,7 +17,7 @@ sc = SparkSession.builder\
 kafkaStream = sc \
   .readStream \
   .format("kafka") \
-  .option("kafka.bootstrap.servers", "localhost:9092") \
+  .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}") \
   .option("subscribe", "twitter-stream") \
   .load()
 
