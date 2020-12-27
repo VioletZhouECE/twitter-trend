@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 python-dotenv = "*"
 tweepy = "*"
+redis = "*"
+pyspark = "*"
+requests = "*"
 
 [dev-packages]
 
