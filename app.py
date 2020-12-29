@@ -1,0 +1,1 @@
+# plan: socket.io emits an event to update the frontend dashboard when a new kafka message arrives

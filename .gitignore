@@ -1,3 +1,5 @@
 .vscode/*
 
 .env
+
+.checkpoint_twitter_app/*

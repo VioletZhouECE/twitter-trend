@@ -19,7 +19,7 @@ api = tweepy.API(auth)
 class StreamListener(tweepy.StreamListener):
     def __init__(self):
         self.client = pykafka.KafkaClient(f"{KAFKA_HOST}:{KAFKA_PORT}")
-        self.producer = self.client.topics[bytes("twitter-stream", "utf-8")].get_producer()
+        self.producer = self.client.topics[bytes("twitter-stream-input", "utf-8")].get_producer()
 
     def on_data(self, data):
         # publish to kafka topic 

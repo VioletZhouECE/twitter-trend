@@ -21,7 +21,7 @@ kafkaStream = spark \
   .readStream \
   .format("kafka") \
   .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}") \
-  .option("subscribe", "twitter-stream") \
+  .option("subscribe", "twitter-stream-input") \
   .load()
 
 # parse value column to json and extract id and entities columns 
@@ -51,11 +51,19 @@ filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 # count hashtags and orderBy count
 hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(20)
 
-# print count
-ds = hashtagAgg \
-  .writeStream \
-  .outputMode("complete")\
-  .format("console") \
-  .start()
+# as required by kafka schema
+kafkaAgg = hashtagAgg.withColumnRenamed("hashtag", "key")\
+                     .withColumn("count", col("count").cast(StringType()))\
+                     .withColumnRenamed("count", "value")
+
+# output to kafka sink
+ds = kafkaAgg\
+    .writeStream\
+    .outputMode("complete")\
+    .format("kafka")\
+    .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}")\
+    .option("checkpointLocation", "checkpoint_twitter_app")\
+    .option("topic", "twitter-stream-output")\
+    .start()
 
 ds.awaitTermination()
