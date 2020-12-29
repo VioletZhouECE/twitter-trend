@@ -1,7 +1,7 @@
 from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
-from pyspark.sql.functions import col, json_tuple, concat, lit, regexp_replace, explode, split, when
+from pyspark.sql.functions import col, json_tuple, concat, lit, regexp_replace, explode, split, when, desc
 from pyspark.sql.types import StringType, ArrayType
 from settings.config_dev import settings
 
@@ -11,7 +11,7 @@ KAFKA_PORT = settings["KAFKA_PORT"]
 # create a spark session
 spark = SparkSession.builder\
         .appName("twitter-trend-streaming")\
-        .master("local[2]")\
+        .master("local[*]")\
         .getOrCreate()
 
 spark.sparkContext.setLogLevel("ERROR")
@@ -45,12 +45,13 @@ hashtagsStream = filteredKafkaStream.withColumn("hashtags", json_tuple(col("enti
                                     .withColumn("hashtag", when(col("hashtag") == "", None).otherwise(col("hashtag")))\
                                     .drop("hashtags")
 
-#filter all the rows here hashtag is null
+# filter all the rows here hashtag is null
 filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 
-#count hashtags and orderBy count
-hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy("count").limit(10)
+# count hashtags and orderBy count
+hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(20)
 
+# print count
 ds = hashtagAgg \
   .writeStream \
   .outputMode("complete")\
