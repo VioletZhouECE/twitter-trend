@@ -9,6 +9,8 @@ tweepy = "*"
 pyspark = "*"
 requests = "*"
 pykafka = "*"
+flask = "*"
+flask-socketio = "*"
 
 [dev-packages]
 

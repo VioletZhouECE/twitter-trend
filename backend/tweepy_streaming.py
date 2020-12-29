@@ -1,4 +1,4 @@
-from settings.config_dev import settings
+from backend.settings.config_dev import settings
 import tweepy
 import time 
 import pykafka

@@ -8,5 +8,6 @@ settings = {
     "ACCESS_TOKEN": os.getenv("ACCESS_TOKEN"),
     "ACCESS_TOKEN_SECRET": os.getenv("ACCESS_TOKEN_SECRET"),
     "KAFKA_HOST": "localhost",
-    "KAFKA_PORT": 9092
+    "KAFKA_PORT": 9092,
+    "FLASK_SECRET_KEY": os.getenv("FLASK_SECRET_KEY")
 }
