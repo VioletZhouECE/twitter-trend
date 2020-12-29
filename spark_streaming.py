@@ -8,14 +8,16 @@ from settings.config_dev import settings
 KAFKA_HOST = settings["KAFKA_HOST"]
 KAFKA_PORT = settings["KAFKA_PORT"]
 
-# create a spark context
-sc = SparkSession.builder\
+# create a spark session
+spark = SparkSession.builder\
         .appName("twitter-trend-streaming")\
         .master("local[2]")\
         .getOrCreate()
 
+spark.sparkContext.setLogLevel("ERROR")
+
 # load the streaming dataframe
-kafkaStream = sc \
+kafkaStream = spark \
   .readStream \
   .format("kafka") \
   .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}") \
@@ -46,8 +48,12 @@ hashtagsStream = filteredKafkaStream.withColumn("hashtags", json_tuple(col("enti
 #filter all the rows here hashtag is null
 filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 
-ds = filteredHashtagsStream \
+#count hashtags and orderBy count
+hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy("count").limit(10)
+
+ds = hashtagAgg \
   .writeStream \
+  .outputMode("complete")\
   .format("console") \
   .start()
 
