@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "23814f4c96d65ed1cec1862106e571539babac57eb2c0d28af29dbf52d49977e"
+            "sha256": "9f8a5f4046ecf095bdeab66c98d4704298e71210f395f506e62ea3d5054dd38c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -87,12 +87,13 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==2.11.2"
         },
-        "kazoo": {
+        "kafka-python": {
             "hashes": [
-                "sha256:8db774f7bdece7d0dc7decb21539ff0852e42c2ffe1c28d7f1ff6f9292a1c3a4",
-                "sha256:a5fa2e400c5068cfee9e86b35cf0dab8232b574152d8e3590d823b3e2426ab5e"
+                "sha256:04dfe7fea2b63726cd6f3e79a2d86e709d608d74406638c5da33a01d45a9d7e3",
+                "sha256:2d92418c7cb1c298fa6c7f0fb3519b520d0d7526ac6cb7ae2a4fc65a51a94b6e"
             ],
-            "version": "==2.5.0"
+            "index": "pypi",
+            "version": "==2.0.2"
         },
         "markupsafe": {
             "hashes": [
@@ -147,14 +148,6 @@
                 "sha256:859ba728a7bb43e9c2bf058832759fb97a598bb28cc12f34f5fc4abdec08ede6"
             ],
             "version": "==0.10.9"
-        },
-        "pykafka": {
-            "hashes": [
-                "sha256:6b075909a52cb0c95325bc16ab797bbcdbb37386652ea460705ed4472ce91459",
-                "sha256:f0bbd394ae6970042a587c99fe4dc0966e67787249d963d4ce2f810dc9490577"
-            ],
-            "index": "pypi",
-            "version": "==2.8.0"
         },
         "pysocks": {
             "hashes": [
@@ -219,13 +212,6 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
-        },
-        "tabulate": {
-            "hashes": [
-                "sha256:ac64cb76d53b1231d364babcd72abbb16855adac7de6665122f97b593f1eb2ba",
-                "sha256:db2723a20d04bcda8522165c73eea7c300eda74e0ce852d9022e0159d7895007"
-            ],
-            "version": "==0.8.7"
         },
         "tweepy": {
             "hashes": [

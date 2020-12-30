@@ -1,6 +1,5 @@
 from datetime import datetime
 import threading
-import pykafka
 from poll_listeners import register_kafka_listener, register_time_listener
 
 def create_socket(socketio):

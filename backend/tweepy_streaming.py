@@ -1,7 +1,7 @@
 from settings.config_dev import settings
 import tweepy
 import time 
-import pykafka
+from kafka import KafkaProducer
 
 CUSTOMER_KEY = settings["CUSTOMER_KEY"]
 CUSTOMER_SECRET = settings["CUSTOMER_SECRET"]
@@ -18,13 +18,10 @@ api = tweepy.API(auth)
 
 class StreamListener(tweepy.StreamListener):
     def __init__(self):
-        self.client = pykafka.KafkaClient(f"{KAFKA_HOST}:{KAFKA_PORT}")
-        self.producer = self.client.topics[bytes("twitter-stream-input", "utf-8")].get_producer()
+        self.producer = KafkaProducer(bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'])
 
     def on_data(self, data):
-        # publish to kafka topic 
-        # pykafka producer only accepts byte objects
-        self.producer.produce(bytes(data, encoding='utf-8'))
+        self.producer.send('twitter-stream-input', bytes(data, encoding='utf-8'))
         return True
 
     def on_status(self, status):
