@@ -1,4 +1,4 @@
-import {subscribeToHashtagData} from "./api";
+import subscribeToHashtagData from "/api.js";
 
 window.onload = initDashboard();
 

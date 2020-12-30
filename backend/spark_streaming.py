@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession
 from pyspark import SparkContext
 from pyspark.sql.functions import col, json_tuple, concat, lit, regexp_replace, explode, split, when, desc
 from pyspark.sql.types import StringType, ArrayType
-from backend.settings.config_dev import settings
+from settings.config_dev import settings
 
 KAFKA_HOST = settings["KAFKA_HOST"]
 KAFKA_PORT = settings["KAFKA_PORT"]

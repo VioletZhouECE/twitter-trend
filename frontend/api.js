@@ -4,4 +4,4 @@ function subscribeToHashtagData(cb){
     socket.on("hashtagData", data => cb(data));
 }
 
-export {subscribeToHashtagData};
+export default subscribeToHashtagData;
