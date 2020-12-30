@@ -9,5 +9,6 @@ function initDashboard(){
 }
 
 function updateHashtagDashboard(data){
+    console.log("data received:", data)
     dashboardContainer.innerText = data;
 }
