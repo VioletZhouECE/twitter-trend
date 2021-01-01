@@ -7,17 +7,24 @@ from settings.config_dev import settings
 # kafka listener that polls kafka message and trigger the callback function when a new message has arrived
 def register_kafka_listener(topic, listener):
     def poll():
+        # timeout is set to 10min for testing purpose
+        TIMEOUT = 600000
         KAFKA_HOST = settings["KAFKA_HOST"]
         KAFKA_PORT  = settings["KAFKA_PORT"]
-        consumer = KafkaConsumer('twitter-stream-output', bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'])
+        consumer = KafkaConsumer('twitter-stream-output', bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'], auto_offset_reset='latest')
+        # buffer array to buffer messages
+        buffer = []
         # start the polling process
-        consumer.poll(timeout_ms=600000)
+        consumer.poll(timeout_ms=TIMEOUT)
         for message in consumer:
-            # send messages to the listener
             if message is not None:
-                msg = message.key.decode("utf-8") + ":" + message.value.decode("utf-8")
+                msg = message.value.decode("utf-8")
                 print(msg)
-                listener(msg)
+                buffer.append(msg)
+                # send messages to the listener if the buffer is full
+                if len(buffer) == 20:
+                    listener(buffer)
+                    buffer = []
     # run pool() in a daemon thread
     t = threading.Thread(target=poll, daemon=True)
     t.start()

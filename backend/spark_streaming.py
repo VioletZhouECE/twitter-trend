@@ -52,11 +52,11 @@ filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(20)
 
 # as required by kafka schema
-kafkaAgg = hashtagAgg.withColumnRenamed("hashtag", "key")\
-                     .withColumn("count", col("count").cast(StringType()))\
-                     .withColumnRenamed("count", "value")
+kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\
+                     .withColumn("value", concat(col("hashtag"), lit(": "), col("count")))
 
-# output to kafka sink
+# output to kafka sink 
+# notice that we write data in batches, hence we use write instead of writeStream
 ds = kafkaAgg\
     .writeStream\
     .outputMode("complete")\
