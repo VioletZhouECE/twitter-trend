@@ -53,7 +53,7 @@ hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("cou
 
 # as required by kafka schema
 kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\
-                     .withColumn("value", concat(col("hashtag"), lit(": "), col("count")))
+                     .withColumn("value", concat(col("hashtag"), lit(":"), col("count")))
 
 # output to kafka sink 
 # notice that we write data in batches, hence we use write instead of writeStream
