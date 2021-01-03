@@ -3,7 +3,10 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 bin/kafka-server-start.sh config/server.properties
 
 2. initialize tweepy streaming and kafka publisher
-python tweepy_streaming.py
+python ./backend/tweepy_streaming.py
 
 3. start spark streaming
-${SPARK_HOME}/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 spark_streaming.py
+${SPARK_HOME}/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 ./backend/spark_streaming.py
+
+4. start flask server 
+python ./backend/app.py
