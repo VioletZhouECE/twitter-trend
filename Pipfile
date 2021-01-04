@@ -11,6 +11,7 @@ requests = "*"
 flask = "*"
 flask-socketio = "*"
 kafka-python = "*"
+redis = "*"
 
 [dev-packages]
 

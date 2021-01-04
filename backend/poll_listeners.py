@@ -1,7 +1,8 @@
 import threading
 from kafka import KafkaConsumer
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
+import redis
 from settings.config_dev import settings
 
 # kafka listener that polls kafka message and trigger the callback function when a new message has arrived
@@ -18,6 +19,9 @@ def register_kafka_listener(topic, listener):
         buffer = []
         prevCount = 0
 
+        #instantiate redis
+        r = redis.Redis()
+
         # start the polling process
         consumer.poll(timeout_ms=TIMEOUT)
         for message in consumer:
@@ -27,14 +31,16 @@ def register_kafka_listener(topic, listener):
                 count = int(msg.split(":")[1])
                 # meeting this condition means that we did not consume data from the beginning of the 20-message batch, so reset
                 # to-do: find a better way to ensure that buffer starts from the 1 message (with the largest count)
-                if count > prevCount and len(buffer) != NUM_OF_MESSAGE:
+                if count > prevCount and len(buffer) < NUM_OF_MESSAGE:
                     buffer = [msg]
                     prevCount = count 
                     continue
                 buffer.append(msg)
                 prevCount = count
-                # send messages to the listener if the buffer is full
+                # if the buffer is full, send messages to the listener and store it to redis
                 if len(buffer) == NUM_OF_MESSAGE:
+                    r.setex("hashtag", timedelta(minutes=2), value=','.join(buffer))
+                    print(r.get("hashtag").decode("utf-8"))
                     listener(buffer)
                     buffer = []
 
