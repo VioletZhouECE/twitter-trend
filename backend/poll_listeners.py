@@ -13,7 +13,7 @@ def register_kafka_listener(topic, listener):
         KAFKA_HOST = settings["KAFKA_HOST"]
         KAFKA_PORT  = settings["KAFKA_PORT"]
         consumer = KafkaConsumer('twitter-stream-output', bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'], auto_offset_reset='latest')
-        NUM_OF_MESSAGE = 20
+        NUM_OF_MESSAGE = 15
 
         # buffer array to buffer messages
         buffer = []

@@ -22,6 +22,7 @@ kafkaStream = spark \
   .format("kafka") \
   .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}") \
   .option("subscribe", "twitter-stream-input") \
+  .option("failOnDataLoss", "false")\
   .load()
 
 # parse value column to json and extract id and entities columns 
@@ -49,7 +50,7 @@ hashtagsStream = filteredKafkaStream.withColumn("hashtags", json_tuple(col("enti
 filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 
 # count hashtags and orderBy count
-hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(20)
+hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(15)
 
 # as required by kafka schema
 kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\

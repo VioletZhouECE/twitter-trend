@@ -26,9 +26,11 @@ def getInitHashtagData(socketio):
         # get data from the redis store
         # to-do: investigate if transaction and watch is necessary here 
         r = redis.Redis()
-        data = r.get("hashtag").decode("utf-8").split(",")
+        data = r.get("hashtag")
         if data is None:
-            data = "no data available"
+            data = ""
+        else:
+            data = data.decode("utf-8").split(",")
         socketio.emit('hashtagData', data, namespace='/hashtag')
     socketio.on_event('getInitData', handler, namespace='/hashtag')
     return socketio
