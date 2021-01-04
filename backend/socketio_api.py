@@ -30,6 +30,6 @@ def getInitHashtagData(socketio):
         if data is None:
             data = "no data available"
         socketio.emit('hashtagData', data, namespace='/hashtag')
-    socketio.on_event('getInitData', handler, namespace='hashtag')
+    socketio.on_event('getInitData', handler, namespace='/hashtag')
     return socketio
 

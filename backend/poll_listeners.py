@@ -21,7 +21,7 @@ def register_kafka_listener(topic, listener):
 
         #instantiate redis
         r = redis.Redis()
-
+        
         # start the polling process
         consumer.poll(timeout_ms=TIMEOUT)
         for message in consumer:
