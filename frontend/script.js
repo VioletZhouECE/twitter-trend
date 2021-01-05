@@ -11,7 +11,6 @@ function initDashboard(){
     subscribeToHashtagData(updateHashtagDashboard);
 }
 
-//re-render the chart everytime new data is received 
 function updateHashtagDashboard(dataList){
 	if (dataList == ""){
 		return;
@@ -19,23 +18,27 @@ function updateHashtagDashboard(dataList){
 
 	loadingIcon.style.display = "none";
 
-    //for now only take the first 10 items in the dataList
     let hashtags = [];
     let values = [];
     dataList.slice(0,15).map(data=>{
-        hashtags.push(data.split(":")[0]);
+        hashtags.push(data.split(":")[0].replace(/^"/i, '').replace(/"$/i, ''));
         values.push(data.split(":")[1]);
     })
 	
-	//destroy the old chart if it exists
-	if (hashtagChart){
-		hashtagChart.destroy();
+	if (!hashtagChart){
+		createChart(hashtags, values);
+	} else {
+		updateChart(hashtags, values);
 	}
-	
-	renderChart(hashtags, values);
 }
 
-function renderChart(hashtags, values){
+function updateChart(hashtags, values){
+	hashtagChart.data.labels = hashtags;
+	hashtagChart.data.datasets[0].data = values;
+	hashtagChart.update();
+}
+
+function createChart(hashtags, values){
     hashtagChart = new Chart(hashtagChartContainer, {
 		plugins: [ChartDataLabels],
     	type: 'horizontalBar',
