@@ -52,8 +52,8 @@ filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 # count hashtags and orderBy count over a 10-minute period, update every 10 seconds
 hashtagAgg = filteredHashtagsStream\
              .withColumn("created_at", col("created_at").cast(TimestampType()))\
-             .withWatermark("created_at", "1 minutes")\
-             .groupBy(window("created_at", "10 minutes", "10 seconds"), col("hashtag"))\
+             .withWatermark("created_at", "1 minute")\
+             .groupBy(window("created_at", "10 minutes", "1 minute"), col("hashtag"))\
              .count()
 
 # as required by kafka schema
