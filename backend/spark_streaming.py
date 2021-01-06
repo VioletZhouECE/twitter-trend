@@ -58,17 +58,18 @@ hashtagWindowAgg = filteredHashtagsStream\
              .count()\
              .withColumn("window", col("window").cast(StringType()))
 
-# select window that starts 10 mins ago, and pick the top 15 records 
-hashtagAgg = hashtagWindowAgg.withColumn("start_time", regexp_replace(split("window", ",")[0], r"^\[", ""))\
-                             .withColumn("end_time", regexp_replace(split("window", ",")[1], r"$\]", ""))\
+# select window that starts 9 mins ago, and pick the top 15 records 
+hashtagAgg = hashtagWindowAgg.withColumn("start_time", regexp_replace(split("window", ",")[0], r"\[", ""))\
+                             .withColumn("end_time", regexp_replace(split("window", ",")[1], r"\]", ""))\
                              .withColumn("time_diff", unix_timestamp() - unix_timestamp("start_time", format="yyyy-MM-dd HH:mm:ss"))\
-                             .where((col("time_diff").cast(IntegerType())>600) & (col("time_diff").cast(IntegerType())<660))\
+                             .where((col("time_diff").cast(IntegerType())>540) & (col("time_diff").cast(IntegerType())<600))\
                              .orderBy(desc("count"))\
                              .limit(15)
 
 # as required by kafka schema
+# use &$% as a separator
 kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\
-                     .withColumn("value", concat(col("start_time"), lit(","), col("end_time"), lit(","), col("hashtag"), lit(","), col("count")))\
+                     .withColumn("value", concat(col("start_time"), lit("&$%"), col("end_time"), lit("&$%"), col("hashtag"), lit("&$%"), col("count")))\
                      .select("start_time", "end_time", "value")
 
 # output to kafka sink 

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import time
 import redis
 from settings.config_dev import settings
+import json
 
 # kafka listener that polls kafka message and trigger the callback function when a new message has arrived
 def register_kafka_listener(topic, listener):
@@ -27,12 +28,11 @@ def register_kafka_listener(topic, listener):
         for message in consumer:
             if message is not None:
                 msg = message.value.decode("utf-8")
-                hashtag = msg.split(":")[0]
-                count = int(msg.split(":")[1])
+                count = int(msg.split("&$%")[3])
                 # meeting this condition means that we did not consume data from the beginning of the 20-message batch, so reset
                 # to-do: find a better way to ensure that buffer starts from the 1 message (with the largest count)
                 if count > prevCount and len(buffer) < NUM_OF_MESSAGE:
-                    buffer = [msg]
+                    buffer = [msg] 
                     prevCount = count 
                     continue
                 buffer.append(msg)

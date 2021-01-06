@@ -6,12 +6,14 @@ let hashtagChart;
 
 const hashtagChartContainer = document.getElementById("hashtag-chart");
 const loadingIcon = document.getElementById("loading");
+const timeWindow = document.getElementById("time-window");
 
 function initDashboard(){
     subscribeToHashtagData(updateHashtagDashboard);
 }
 
 function updateHashtagDashboard(dataList){
+	console.log(dataList);
 	if (dataList == ""){
 		return;
 	}
@@ -21,15 +23,22 @@ function updateHashtagDashboard(dataList){
     let hashtags = [];
     let values = [];
     dataList.slice(0,15).map(data=>{
-        hashtags.push(data.split(":")[0].replace(/^"/i, '').replace(/"$/i, ''));
-        values.push(data.split(":")[1]);
+        hashtags.push(data.split("&$%")[2].replace(/^"/i, '').replace(/"$/i, ''));
+        values.push(data.split("&$%")[3]);
     })
 	
+	//update chart
 	if (!hashtagChart){
 		createChart(hashtags, values);
 	} else {
 		updateChart(hashtags, values);
 	}
+
+	//update time window 
+	const startTime = dataList[0].split("&$%")[0];
+	const endTime = dataList[0].split("&$%")[1];
+
+	timeWindow.innerText = startTime + ' - ' + endTime;
 }
 
 function updateChart(hashtags, values){
