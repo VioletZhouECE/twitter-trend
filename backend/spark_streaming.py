@@ -1,8 +1,8 @@
 from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
 from pyspark import SparkContext
-from pyspark.sql.functions import col, json_tuple, concat, lit, regexp_replace, explode, split, when, desc
-from pyspark.sql.types import StringType, ArrayType
+from pyspark.sql.functions import col, json_tuple, concat, lit, regexp_replace, explode, split, when, desc, window
+from pyspark.sql.types import StringType, ArrayType, TimestampType
 from settings.config_dev import settings
 
 KAFKA_HOST = settings["KAFKA_HOST"]
@@ -49,8 +49,12 @@ hashtagsStream = filteredKafkaStream.withColumn("hashtags", json_tuple(col("enti
 # filter all the rows here hashtag is null
 filteredHashtagsStream = hashtagsStream.where(col("hashtag").isNotNull())
 
-# count hashtags and orderBy count
-hashtagAgg = filteredHashtagsStream.groupBy("hashtag").count().orderBy(desc("count")).limit(15)
+# count hashtags and orderBy count over a 10-minute period, update every 10 seconds
+hashtagAgg = filteredHashtagsStream\
+             .withColumn("created_at", col("created_at").cast(TimestampType()))\
+             .withWatermark("created_at", "1 minutes")\
+             .groupBy(window("created_at", "10 minutes", "10 seconds"), col("hashtag"))\
+             .count()
 
 # as required by kafka schema
 kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\
@@ -59,7 +63,7 @@ kafkaAgg = hashtagAgg.withColumn("count", col("count").cast(StringType()))\
 # output to kafka sink 
 ds = kafkaAgg\
     .writeStream\
-    .outputMode("complete")\
+    .outputMode("update")\
     .format("kafka")\
     .option("kafka.bootstrap.servers", f"{KAFKA_HOST}:{KAFKA_PORT}")\
     .option("checkpointLocation", "checkpoint_twitter_app")\
